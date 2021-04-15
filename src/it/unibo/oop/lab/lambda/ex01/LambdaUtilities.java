@@ -137,7 +137,8 @@ public final class LambdaUtilities {
             map.put(i, opt.get(i));
         }
 
-        IntStream.range(1, 11).forEach(i -> {
+        final int maxRange = 11;
+        IntStream.range(1, maxRange).forEach(i -> {
             System.out.print(i + " ");
             System.out.println(fill(map, () -> (int) (-Math.random() * 10)));
         });
