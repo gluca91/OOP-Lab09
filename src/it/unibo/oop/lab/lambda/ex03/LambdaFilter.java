@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 /**
- * Modify this small program adding new filters.
- * Realize this exercise using as much as possible the Stream library.
+ * Modify this small program adding new filters. Realize this exercise using as
+ * much as possible the Stream library.
  * 
  * 1) Convert to lowercase
  * 
@@ -27,7 +27,8 @@ import javax.swing.JTextArea;
  * 
  * 4) List all the words in alphabetical order
  * 
- * 5) Write the count for each word, e.g. "word word pippo" should output "pippo -> 1 word -> 2"
+ * 5) Write the count for each word, e.g. "word word pippo" should output "pippo
+ * -> 1 word -> 2"
  *
  */
 public final class LambdaFilter extends JFrame {
@@ -35,7 +36,13 @@ public final class LambdaFilter extends JFrame {
     private static final long serialVersionUID = 1760990730218643730L;
 
     private enum Command {
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+        //
+        TO_LOWER_CASE("To lower case", String::toLowerCase),
+        //
+        NUMBER_OF_CHAR("Number of char", i -> String.valueOf(i.length())),
+        //
+        NUMBER_OF_LINES("Number of lines", i -> String.valueOf(i.lines().count()));
 
         private final String commandName;
         private final Function<String, String> fun;
