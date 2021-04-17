@@ -34,57 +34,104 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return this.songs.stream().map(Song::getSongName).sorted();
+//        return this.songs.stream().map(Song::getSongName).sorted();
+        return songs.stream().map(i -> i.getSongName()).sorted();
     }
 
     @Override
     public Stream<String> albumNames() {
-        return this.albums.keySet().stream();
+//        return this.albums.keySet().stream();
+        return albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return this.albums.entrySet().stream().filter(e -> e.getValue() == year).map(e -> e.getKey());
+//        return this.albums.entrySet().stream().filter(e -> e.getValue() == year).map(e -> e.getKey());
+        return albums.keySet().stream().filter(i -> albums.get(i).equals(Integer.valueOf(year)));
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return (int) this.songs.stream()
-                .filter(s -> s.getAlbumName().isPresent())
-                .filter(s -> s.getAlbumName().get().equals(albumName))
-                .count();
+//        return (int) this.songs.stream()
+//                .filter(s -> s.getAlbumName().isPresent())
+//                .filter(s -> s.getAlbumName().get().equals(albumName))
+//                .count();
+        return (int) (songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(albumName))).count());
+        // SCORRETTO: se il nome album fosse-> "" ritornerebbe-> true
+//        return (int) (songs.stream().filter(i -> i.getAlbumName().orElse("").equals(albumName)).count());
+        // SCORRETTO: se è-> Optional.empty(), il metodo-> get() lancia eccezione->
+        // NoSuchElementException
+//        return (int) (songs.stream().filter(i -> i.getAlbumName().get().equals(albumName)).count());
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return (int) this.songs.stream().filter(s -> s.getAlbumName().isEmpty()).count();
+//        return (int) this.songs.stream().filter(s -> s.getAlbumName().isEmpty()).count();
+        return (int) (songs.stream().filter(i -> i.getAlbumName().equals(Optional.empty())).count());
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return this.songs.stream()
-                .filter(s -> s.getAlbumName().isPresent())
-                .filter(s -> s.getAlbumName().get().equals(albumName))
-                .mapToDouble(Song::getDuration)
-                            // equivalent to s -> s.getDuration()
-                .average();
+//        return this.songs.stream()
+//                .filter(s -> s.getAlbumName().isPresent())
+//                .filter(s -> s.getAlbumName().get().equals(albumName))
+//                .mapToDouble(Song::getDuration)
+//                            // equivalent to s -> s.getDuration()
+//                .average();
+
+//        songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(albumName))).map(i -> i.getDuration())
+//                .reduce((i, j) -> i = i + j).map(i -> i / countSongs(albumName));
+        return OptionalDouble.of(songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(albumName)))
+                .map(i -> i.getDuration()).reduce((i, j) -> i = i + j).map(i -> i / countSongs(albumName)).get());
     }
 
     @Override
     public Optional<String> longestSong() {
-        return this.songs.stream()
-                .collect(Collectors.maxBy(Comparator.comparingDouble(Song::getDuration)))
-                // equivalent to Collectors.maxBy((a, b) -> Double.compare(a.getDuration(), b.getDuration()))
-                .map(Song::getSongName);
+//        return this.songs.stream()
+//                .collect(Collectors.maxBy(Comparator.comparingDouble(Song::getDuration)))
+//                // equivalent to Collectors.maxBy((a, b) -> Double.compare(a.getDuration(), b.getDuration()))
+//                .map(Song::getSongName);
+
+//        return Optional.of(songs.stream().max(new Comparator<Song>() {
+//            @Override
+//            public int compare(final Song o1, final Song o2) {
+//                return Double.compare(o1.getDuration(), o2.getDuration());
+//            }
+//        }).get().getSongName());
+
+        return Optional.of(
+                songs.stream().max((o1, o2) -> Double.compare(o1.getDuration(), o2.getDuration())).get().getSongName());
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return this.songs.stream().filter(a -> a.getAlbumName().isPresent())
-                .collect(Collectors.groupingBy(Song::getAlbumName, Collectors.summingDouble(Song::getDuration)))
-                .entrySet().stream()
-                .collect(Collectors.maxBy(Comparator.comparingDouble(Entry::getValue)))
-                .flatMap(Entry::getKey);
+//        return this.songs.stream().filter(a -> a.getAlbumName().isPresent())
+//                .collect(Collectors.groupingBy(Song::getAlbumName, Collectors.summingDouble(Song::getDuration)))
+//                .entrySet().stream()
+//                .collect(Collectors.maxBy(Comparator.comparingDouble(Entry::getValue)))
+//                .flatMap(Entry::getKey);
+
+//        return albums.keySet().stream().max(new Comparator<String>() {
+//            @Override
+//            public int compare(final String o1, final String o2) {
+//                final Double a = songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(o1)))
+//                        .map(i -> i.getDuration()).reduce((j, k) -> j = j + k).get();
+//                final Double b = songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(o2)))
+//                        .map(i -> i.getDuration()).reduce((j, k) -> j = j + k).get();
+//                return a.compareTo(b);
+//            }
+//        });
+//        return albums.keySet().stream()
+//                .max((o1, o2) -> songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(o1)))
+//                        .map(i -> i.getDuration()).reduce((j, k) -> j = j + k).get()
+//                        .compareTo(songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(o2)))
+//                                .map(i -> i.getDuration()).reduce((j, k) -> j = j + k).get()));
+        return albums.keySet().stream().max((o1, o2) -> albumLength(o1).compareTo(albumLength(o2)));
+    }
+
+    private Double albumLength(final String albumName) {
+        return songs.stream().filter(i -> i.getAlbumName().equals(Optional.of(albumName))).map(i -> i.getDuration())
+                .reduce((j, k) -> j = j + k).get();
     }
 
     private static final class Song {

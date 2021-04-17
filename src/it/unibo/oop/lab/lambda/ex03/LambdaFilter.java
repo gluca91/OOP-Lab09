@@ -18,9 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 /**
- * Modify this small program adding new filters.
- * Realize this exercise using as much as possible the Stream library.
- *
+ * Modify this small program adding new filters. Realize this exercise using as
+ * much as possible the Stream library.
+ * 
  * 1) Convert to lowercase
  *
  * 2) Count the number of chars
@@ -29,18 +29,19 @@ import javax.swing.JTextArea;
  *
  * 4) List all the words in alphabetical order
  * 
- * 5) Write the count for each word, e.g. "word word pippo" should output "pippo -> 1 word -> 2"
+ * 5) Write the count for each word, e.g. "word word pippo" should output "pippo
+ * -> 1 word -> 2"
  *
  */
 public final class LambdaFilter extends JFrame {
 
     private static final long serialVersionUID = 1760990730218643730L;
     /*
-     * This is a "regular expression". It is a very powerful tool for inspecting
-     * and manipulating strings. Unfortunately, we have no room in this course
-     * to introduce them - but you can read something yourself (start from
-     * https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html),
-     * and test your abilities with https://regex101.com/
+     * This is a "regular expression". It is a very powerful tool for inspecting and
+     * manipulating strings. Unfortunately, we have no room in this course to
+     * introduce them - but you can read something yourself (start from
+     * https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html), and
+     * test your abilities with https://regex101.com/
      */
     private static final String ANY_NON_WORD = "(\\s|\\p{Punct})+";
 
@@ -48,21 +49,28 @@ public final class LambdaFilter extends JFrame {
         /**
          * Commands.
          */
+//        IDENTITY("No modifications", Function.identity()),
+//        TO_LOWER("Lowercase", String::toLowerCase),
+//        COUNT("Count chars", s -> Integer.toString(s.length())),
+//        LINES("Count lines", s -> Long.toString(s.chars().filter(e -> e == '\n').count() + 1)),
+//        WORDS("Sort words in alphabetical order", s ->
+//            Arrays.stream(s.split(ANY_NON_WORD))
+//                .sorted()
+//                .collect(Collectors.joining("\n"))),
+//        WORDCOUNT("Count words", s ->
+//            Arrays.stream(s.split(ANY_NON_WORD))
+//                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+//                .entrySet().stream()
+//                .map(e -> e.getKey() + " -> " + e.getValue())
+//                .collect(Collectors.joining("\n"))
+//        );
         IDENTITY("No modifications", Function.identity()),
-        TO_LOWER("Lowercase", String::toLowerCase),
-        COUNT("Count chars", s -> Integer.toString(s.length())),
-        LINES("Count lines", s -> Long.toString(s.chars().filter(e -> e == '\n').count() + 1)),
-        WORDS("Sort words in alphabetical order", s ->
-            Arrays.stream(s.split(ANY_NON_WORD))
-                .sorted()
-                .collect(Collectors.joining("\n"))),
-        WORDCOUNT("Count words", s ->
-            Arrays.stream(s.split(ANY_NON_WORD))
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                .entrySet().stream()
-                .map(e -> e.getKey() + " -> " + e.getValue())
-                .collect(Collectors.joining("\n"))
-        );
+        //
+        TO_LOWER_CASE("To lower case", String::toLowerCase),
+        //
+        NUMBER_OF_CHAR("Number of char", i -> String.valueOf(i.length())),
+        //
+        NUMBER_OF_LINES("Number of lines", i -> String.valueOf(i.lines().count()));
 
         private final String commandName;
         private final Function<String, String> fun;
